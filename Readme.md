@@ -1,29 +1,26 @@
-# TalentLens AI — AI-Powered Resume Screening & Candidate Ranking System
+# TalentLens AI — Intelligent Resume Screening & ATS Evaluation System
 
-TalentLens AI is an intelligent ATS-style resume screening platform that evaluates resumes against job descriptions using LLM-powered analysis, semantic understanding, skill extraction, and rubric-based AI scoring.
+## Project Overview
 
-The platform helps recruiters automatically:
-- Screen resumes
-- Match candidates with job descriptions
-- Rank applicants intelligently
-- Detect missing skills
-- Generate ATS-style evaluations
-- Produce recruiter-ready reports
+TalentLens AI is an AI-powered resume screening and candidate ranking platform designed for modern technical recruitment workflows.
 
----
+The system allows recruiters to:
 
-# Features
+- Upload multiple resumes (PDF/DOCX)
+- Enter a Job Description (JD)
+- Perform AI-based ATS evaluation
+- Rank candidates automatically
+- Identify matched and missing skills
+- Generate shortlist/reject recommendations
+- Export candidate reports as PDF
 
-- AI Resume Parsing
-- ATS-Style Candidate Evaluation
-- Resume vs JD Matching
-- Semantic Skill Analysis
-- AI-Powered Scoring Engine
-- Candidate Ranking System
-- PDF Report Generation
-- Recruiter Workflow UI
-- Vector Embedding Storage
-- FastAPI + React Full Stack Architecture
+The project combines:
+
+- MERN Stack
+- FastAPI AI microservice
+- Large Language Models (LLMs)
+- Semantic resume analysis
+- ATS-style scoring pipeline
 
 ---
 
@@ -31,307 +28,357 @@ The platform helps recruiters automatically:
 
 ## Frontend
 - React.js
+- Vite
 - Tailwind CSS
 - Axios
-- jsPDF
 
 ## Backend
-- FastAPI
-- Python
-- Node.js / Express
-- Multer
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+- Multer File Uploads
 
-## AI / ML Stack
+## AI Service
+- FastAPI
+- Sentence Transformers
 - Groq API
 - Llama 3.3 70B Versatile
-- Sentence Transformers
-- ChromaDB
-- Semantic Embeddings
 
 ---
 
-# System Architecture
-
-User → React Frontend → Express Upload API → FastAPI AI Engine → Groq LLM + Embedding Models → ChromaDB → Ranked Results → Frontend Dashboard
-
----
-
-# Project Workflow
-
-1. Recruiter enters Job Description
-2. Recruiter uploads resumes
-3. Backend parses resumes
-4. Skills are extracted
-5. Embeddings are generated
-6. Resume vectors stored in ChromaDB
-7. LLM evaluates resume against JD
-8. AI scoring engine calculates rubric scores
-9. Candidates ranked by final ATS score
-10. Frontend displays recruiter dashboard
-
----
-
-# Mandatory Technical Disclosures
-
-
-
----
-
-# 1. LLM Chosen
+# LLM Chosen
 
 ## Model
-- Llama 3.3 70B Versatile
-
-## Provider
-- Groq
+- Llama-3.3-70B-Versatile
+- Provider: Groq
 
 ## Why This Model?
 
-The project uses Groq-hosted Llama 3.3 70B because:
+The model was selected because:
 
-### Advantages
-- Extremely fast inference
-- Large context handling
-- Strong reasoning capabilities
-- High-quality JSON generation
+- Extremely fast inference speed
+- Strong reasoning capability
+- Low latency for resume analysis
+- Excellent structured JSON generation
 - Cost-effective compared to GPT-4
-- Reliable ATS-style resume analysis
-- Good prompt adherence
-
-### Why Not Alternatives?
-
-| Model | Reason Not Selected |
-|---|---|
-| GPT-4 | Higher cost |
-| Gemini | Less consistent JSON formatting |
-| Claude | Slower API response |
-| Local LLMs | Limited compute resources |
+- Suitable for ATS-style evaluation pipelines
 
 ---
 
-# 2. Agent Framework
-
-## Framework Used
-- FastAPI-based modular AI pipeline
+# Agent Framework
 
 ## Architecture Style
-- Plan-and-execute pipeline
-- Modular service architecture
+Single-agent AI evaluation pipeline.
 
-## Internal AI Flow
+The AI service acts as an intelligent ATS recruiter.
 
-Resume Upload
-↓
+---
+
+# Agent Workflow
+
+```text
+User Uploads Resume
+        ↓
+Node.js Backend
+        ↓
 Resume Parsing
-↓
+        ↓
+FastAPI AI Service
+        ↓
 Skill Extraction
-↓
-Embedding Generation
-↓
-Vector Storage
-↓
+        ↓
+ATS Scoring Engine
+        ↓
 LLM Evaluation
-↓
-Rubric Scoring
-↓
+        ↓
 Candidate Ranking
-↓
+        ↓
 Frontend Dashboard
-
-## Modules
-
-| Module | Responsibility |
-|---|---|
-| parsers | Resume text extraction |
-| embeddings | Semantic vector generation |
-| chroma | Vector DB storage |
-| services/ai_scorer.py | AI ATS scoring |
-| services/groq_analyzer.py | Resume analysis |
-| matcher.py | Similarity calculations |
+```
 
 ---
 
-# 3. Prompt Design
+# Prompt Design
 
-The project uses strict ATS-style prompts to ensure realistic recruiter evaluation.
+The AI prompt was carefully engineered to simulate a strict ATS recruiter.
 
-## Prompt Goals
+## Prompt Features
 
-- Strict JD-resume matching
-- Technology relevance validation
-- Missing skill detection
-- ATS-style evaluation
-- JSON-safe structured output
 - Rubric-based scoring
+- Structured JSON output
+- Strict rejection logic
+- Skill gap detection
+- Experience relevance validation
+- Domain-specific filtering
 
-## Prompt Engineering Strategy
+## ATS Evaluation Categories
 
-### Guardrails Applied
-- Scores restricted to 0-10
-- Forced JSON output
-- Strict JD relevance enforcement
-- Hallucination reduction instructions
-- Conservative scoring policy
-- Technology mismatch penalties
-
-### Evaluation Dimensions
-- Skills Match
-- Experience Relevance
-- Education & Certifications
-- Projects & Portfolio
-- Communication Quality
-
-### AI Behavior Rules
-- Missing JD skills reduce score
-- Irrelevant projects reduce score
-- Generic resumes do not receive high scores
-- Production-level projects improve score
-
----
-
-# 4. Security Mitigations
-
-The system includes several security-focused design decisions.
-
-## File Upload Security
-- Restricted file types
-- PDF/DOC/DOCX validation
-- Multer upload middleware
-- Controlled upload directory
-
-## Environment Security
-- API keys stored in `.env`
-- No secrets exposed to frontend
-
-## Prompt Injection Mitigation
-- Structured prompts
-- Restricted output format
-- JSON-only response enforcement
-
-## Backend Security
-- CORS protection
-- Request validation using Pydantic
-- Controlled API routes
-
-## Data Protection
-- No permanent sensitive resume storage
-- Vector embeddings stored locally
-- Minimal logging
-
----
-
-# AI Scoring Rubric
-
-| Dimension | Weight |
+| Category | Weight |
 |---|---|
 | Skills Match | 30% |
 | Experience Relevance | 25% |
-| Education & Certifications | 15% |
-| Projects & Portfolio | 20% |
-| Communication Quality | 10% |
+| Education | 15% |
+| Projects | 20% |
+| Communication | 10% |
 
 ---
 
-# Final Score Formula
+# Strict ATS Rules
 
-```python
-final_score =
-(skills_score * 0.30) +
-(experience_score * 0.25) +
-(education_score * 0.15) +
-(project_score * 0.20) +
-(communication_score * 0.10)
-```
+The system includes hard ATS filtering logic:
 
----
-
-# API Endpoints
-
-## Analyze Resume
-
-```http
-POST /analyze-resume
-```
-
-### Request
-```json
-{
-  "job_description": "...",
-  "resume_paths": []
-}
-```
+- Missing critical JD skills lowers score aggressively
+- Generic resumes are penalized
+- Experience mismatch reduces score
+- Recommendation automatically becomes REJECT if major skills are absent
+- Final score reflects actual job fit rather than generic resume quality
 
 ---
 
-# Folder Structure
+# Security Mitigations
 
-```bash
+## 1. Prompt Injection Protection
+
+### Risk
+Malicious users may try to manipulate AI behavior.
+
+### Mitigation
+- Input sanitization
+- Structured JSON outputs
+- Output validation
+- Fixed ATS evaluation rules
+
+---
+
+## 2. Data Privacy / PII Protection
+
+### Risk
+Resumes contain personal data.
+
+### Mitigation
+- Local resume processing
+- Sensitive data not logged
+- No plaintext PII stored in prompts
+- Secure backend architecture
+
+---
+
+## 3. API Key Exposure
+
+### Risk
+Leaking Groq or database credentials.
+
+### Mitigation
+- `.env` variables
+- `.gitignore` protection
+- Environment-based secret management
+
+---
+
+## 4. Hallucination Risk
+
+### Risk
+LLM generating unrealistic scores.
+
+### Mitigation
+- Strict ATS prompt
+- Rule-based validation
+- JSON schema enforcement
+- Recommendation constraints
+
+---
+
+## 5. Unauthorized Access
+
+### Risk
+Public abuse of AI endpoints.
+
+### Mitigation
+- JWT Authentication
+- API key verification
+- Rate limiting with SlowAPI
+- Protected routes
+
+---
+
+## 6. File Upload Security
+
+### Risk
+Malicious file uploads.
+
+### Mitigation
+- PDF/DOCX validation
+- File size restrictions
+- Upload filtering
+- Secure storage handling
+
+---
+
+# Project Structure
+
+```text
 talentlens-ai/
 │
-├── ai-service/
-│   ├── chroma/
-│   ├── embeddings/
-│   ├── parsers/
-│   ├── services/
-│   ├── main.py
+├── client/                 # React Frontend
+├── server/                 # Node.js Backend
+├── ai-service/             # FastAPI AI Service
 │
-├── client/
-│   ├── src/
+├── uploads/
+├── embeddings/
+├── chroma/
 │
-├── server/
-│   ├── uploads/
+├── README.md
+├── .env.example
+└── requirements.txt
 ```
 
 ---
 
-# Future Improvements
+# Setup Instructions
 
-- Multi-agent recruiter workflow
-- AI interview generation
-- Candidate chat assistant
-- Recruiter analytics dashboard
-- Resume improvement suggestions
-- Email automation
-- Job recommendation engine
-- Fine-tuned ATS model
-- Redis queue pipeline
-- Docker deployment
+## 1. Clone Repository
+
+```bash
+git clone <repo-url>
+cd talentlens-ai
+```
 
 ---
 
-# Installation
-
-## Backend
+## 2. Install Frontend Dependencies
 
 ```bash
-cd ai-service
+cd client
+npm install
+```
+
+---
+
+## 3. Install Backend Dependencies
+
+```bash
+cd ../server
+npm install
+```
+
+---
+
+## 4. Setup AI Service
+
+```bash
+cd ../ai-service
 
 python -m venv venv
 
 source venv/bin/activate
 
 pip install -r requirements.txt
-
-uvicorn main:app --reload --port 8001
 ```
 
-## Frontend
+---
+
+## 5. Configure Environment Variables
+
+Create `.env` files.
+
+### Backend `.env`
+
+```env
+MONGO_URI=
+JWT_SECRET=
+```
+
+### AI Service `.env`
+
+```env
+GROQ_API_KEY=
+AI_SERVICE_API_KEY=
+```
+
+---
+
+## 6. Run Backend
+
+```bash
+cd server
+npm run server
+```
+
+---
+
+## 7. Run Frontend
 
 ```bash
 cd client
-
-npm install
-
 npm run dev
 ```
 
 ---
 
-# Environment Variables
+## 8. Run AI Service
 
-```env
-GROQ_API_KEY=your_api_key
+```bash
+cd ai-service
+
+source venv/bin/activate
+
+python -m uvicorn main:app --reload --port 8001
 ```
+
+---
+
+# Features
+
+- Multi Resume Upload
+- AI ATS Scoring
+- Candidate Ranking
+- Skill Matching
+- Missing Skill Detection
+- Resume Parsing
+- PDF Report Generation
+- JWT Authentication
+- FastAPI AI Integration
+- Strict ATS Evaluation Logic
+
+---
+
+# Sample Output
+
+## Example Candidate Evaluation
+
+```json
+{
+  "skills_score": 6,
+  "experience_score": 4,
+  "education_score": 8,
+  "project_score": 8,
+  "communication_score": 7,
+  "recommendation": "HOLD"
+}
+```
+
+---
+
+# Demo
+
+The system supports:
+
+- End-to-end resume screening
+- Live ATS ranking
+- PDF export
+- Candidate recommendation workflow
+
+---
+
+# Future Improvements
+
+- RAG-based candidate memory
+- Interview question generation
+- AI recruiter chatbot
+- Resume-job semantic search
+- Multi-agent recruiter pipeline
+- Recruiter analytics dashboard
 
 ---
 
@@ -339,4 +386,8 @@ GROQ_API_KEY=your_api_key
 
 Dev Malik
 
-AI Engineer | Full Stack Developer | AI Systems Builder
+---
+
+# License
+
+This project is developed for academic and learning purposes.
