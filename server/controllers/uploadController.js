@@ -6,22 +6,33 @@ export const uploadResume = async (req, res) => {
 
   try {
 
-    if (!req.file) {
+    if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
         message: "No file uploaded",
       });
     }
 
-    const candidate = await Candidate.create({
-      resumeFile: req.file.path,
-      uploadedBy: req.user.id,
-    });
+    const uploadedCandidates = await Promise.all(
+
+        req.files.map(async (file) => {
+      
+          return await Candidate.create({
+      
+            resumeFile: file.path,
+      
+            uploadedBy: req.user.id,
+      
+          });
+      
+        })
+      );
 
     res.status(201).json({
       success: true,
       message: "Resume uploaded successfully",
-      candidate,
+      files: req.files,
+      candidates: uploadedCandidates
     });
 
   } catch (error) {

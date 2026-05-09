@@ -12,14 +12,52 @@ client = Groq(
 def analyze_resume(resume_text):
 
     prompt = f"""
-    Analyze this resume professionally.
+    You are an expert ATS AI recruiter.
 
-    Give:
+    Analyze this resume according to the following hiring rubric.
+
+    Give output in this EXACT format:
+
     1. Candidate Summary
-    2. Technical Skills
-    3. Strengths
-    4. Weaknesses
-    5. Suitability Score out of 100
+
+    2. Skills Match Evaluation (/10)
+    - Give score
+    - Give one-line justification
+
+    3. Experience Relevance Evaluation (/10)
+    - Give score
+    - Give one-line justification
+
+    4. Education & Certifications Evaluation (/10)
+    - Give score
+    - Give one-line justification
+
+    5. Project / Portfolio Evaluation (/10)
+    - Give score
+    - Give one-line justification
+
+    6. Communication Quality Evaluation (/10)
+    - Give score
+    - Give one-line justification
+
+    7. Strengths
+
+    8. Weaknesses
+
+    9. Recommended Job Roles
+
+    10. Missing Skills / Improvements
+
+    11. Final Hiring Recommendation
+    - SHORTLIST / HOLD / REJECT
+
+    IMPORTANT:
+    - Keep response ATS-style
+    - Keep response concise
+    - Do NOT generate markdown tables
+    - Do NOT generate percentages
+    - Do NOT generate weighted scores
+    - Keep professional HR tone
 
     Resume:
     {resume_text}

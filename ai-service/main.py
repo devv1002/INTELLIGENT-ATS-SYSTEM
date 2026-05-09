@@ -1,6 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi import Depends
+from middleware.auth import verify_api_key
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+from services.ai_scorer import (
+    ai_resume_scorer,
+)
+
+import os
 
 from parsers.resume_parser import parse_resume
 from embeddings.embedder import generate_embedding
@@ -16,9 +26,21 @@ from services.skill_extractor import (
 from services.groq_analyzer import analyze_resume
 from services.matcher import calculate_similarity
 
+from services.security import (
+
+    sanitize_input,
+
+    mask_sensitive_data
+)
+
 
 app = FastAPI()
 
+limiter = Limiter(
+    key_func=get_remote_address
+)
+
+app.state.limiter = limiter
 
 # CORS
 app.add_middleware(
@@ -33,6 +55,7 @@ app.add_middleware(
 # REQUEST MODEL
 class JDRequest(BaseModel):
     job_description: str
+    resume_paths: list[str]
 
 
 @app.get("/")
@@ -43,91 +66,251 @@ def root():
     }
 
 
-# AI RESUME ANALYSIS
-@app.post("/analyze-resume")
-def analyze_resume_api(data: JDRequest):
+from pydantic import BaseModel
 
-    # JOB DESCRIPTION FROM FRONTEND
+class ResumeRequest(BaseModel):
+
+    resume_paths: list[str]
+
+    job_description: str
+
+@limiter.limit("5/minute")
+# AI RESUME ANALYSIS
+@app.post(
+    "/analyze-resume",
+    dependencies=[Depends(
+        verify_api_key
+    )]
+)
+async def analyze_resume_api(
+    request: Request,
+    data: ResumeRequest
+):
+
     job_description = data.job_description
 
-    # RESUME FILE PATH
-    file_path = "../server/uploads/1778312489131-771821297.pdf"
+    resume_paths = data.resume_paths
 
-    # PARSE RESUME
-    resume_text = parse_resume(file_path)
+    ranked_candidates = []
 
-    # EXTRACT SKILLS
-    resume_skills = extract_skills(
-        resume_text
-    )
-
+    # JD SKILLS
     jd_skills = extract_skills(
         job_description
     )
 
-    # MATCHED SKILLS
-    matched_skills = list(
-        set(resume_skills) &
-        set(jd_skills)
-    )
-
-    # MISSING SKILLS
-    missing_skills = list(
-        set(jd_skills) -
-        set(resume_skills)
-    )
-
-    # GENERATE RESUME EMBEDDING
-    resume_embedding = generate_embedding(
-        resume_text
-    )
-
-    # GENERATE JD EMBEDDING
+    # JD EMBEDDING
     jd_embedding = generate_embedding(
         job_description
     )
 
-    # STORE VECTOR
-    store_resume_embedding(
-        candidate_id="candidate_1",
-        embedding=resume_embedding,
-        resume_text=resume_text
-    )
+    for resume_path in resume_paths:
 
-    # SEMANTIC SCORE
-    semantic_score = calculate_similarity(
-        resume_embedding,
-        jd_embedding
-    )
+        try:
 
-    # SKILL SCORE
-    skill_score = (
-        len(matched_skills) /
-        len(jd_skills)
-    ) * 100 if jd_skills else 0
+            # PARSE RESUME
+            absolute_resume_path = os.path.abspath(
+                f"../server/{resume_path}"
+            )
 
-    # FINAL HYBRID SCORE
-    match_score = round(
-        (semantic_score * 0.7) +
-        (skill_score * 0.3),
-        2
-    )
+            print("READING FILE:", absolute_resume_path)
 
-    # AI ANALYSIS
-    analysis = analyze_resume(
-        resume_text
+            resume_text = parse_resume(
+                absolute_resume_path
+            )
+
+            # SANITIZE INPUTS
+            resume_text = sanitize_input(
+                resume_text
+            )
+
+            job_description = sanitize_input(
+                job_description
+            )
+
+            # EXTRACT SKILLS
+            resume_skills = extract_skills(
+                resume_text
+            )
+
+            # MATCHED SKILLS
+            matched_skills = list(
+                set(resume_skills) &
+                set(jd_skills)
+            )
+
+            # MISSING SKILLS
+            missing_skills = list(
+                set(jd_skills) -
+                set(resume_skills)
+            )
+
+            # RESUME EMBEDDING
+            resume_embedding = generate_embedding(
+                resume_text
+            )
+
+            # STORE VECTOR
+            store_resume_embedding(
+                candidate_id=resume_path,
+                embedding=resume_embedding,
+                resume_text=resume_text
+            )
+
+            # =========================
+            # SEMANTIC SCORE
+            # =========================
+            semantic_score = calculate_similarity(
+                resume_embedding,
+                jd_embedding
+            )
+
+            # =========================
+            # SKILLS SCORE
+            # =========================
+            skills_score = (
+                len(matched_skills) /
+                len(jd_skills)
+            ) * 100 if jd_skills else 0
+
+            # =========================
+            # EXPERIENCE SCORE
+            # =========================
+            # REAL AI RUBRIC SCORING
+            ai_scores = ai_resume_scorer(
+                resume_text,
+                job_description
+            )
+
+            skills_score = ai_scores["skills_score"]
+
+            experience_score = ai_scores["experience_score"]
+
+            education_score = ai_scores["education_score"]
+
+            project_score = ai_scores["project_score"]
+
+            communication_score = ai_scores["communication_score"]
+
+            recommendation = ai_scores["recommendation"]
+
+            summary = ai_scores["summary"]
+
+            # =========================
+            # FINAL RUBRIC SCORE
+            # =========================
+            final_score = round(
+
+                (
+                    (skills_score * 30) +
+
+                    (experience_score * 25) +
+
+                    (education_score * 15) +
+
+                    (project_score * 20) +
+
+                    (communication_score * 10)
+
+                ) / 10,
+
+                2
+            )
+
+            # =========================
+            # RECOMMENDATION
+            # =========================
+            if final_score >= 80:
+
+                recommendation = "SHORTLIST"
+
+            elif final_score >= 60:
+
+                recommendation = "HOLD"
+
+            else:
+
+                recommendation = "REJECT"
+
+            # =========================
+            # AI ANALYSIS
+            # =========================
+            safe_resume_text = mask_sensitive_data(
+                resume_text
+            )
+
+            analysis = analyze_resume(
+                safe_resume_text
+            )
+
+            ranked_candidates.append({
+
+                "resume_path": resume_path,
+
+                "final_score": final_score,
+
+                "semantic_score": round(
+                    semantic_score,
+                    2
+                ),
+
+                "skills_score": round(skills_score, 2),
+
+                "experience_score": round(
+                    experience_score,
+                    2
+                ),
+
+                "education_score": round(
+                    education_score,
+                    2
+                ),
+
+                "project_score": round(
+                    project_score,
+                    2
+                ),
+
+                "communication_score": round(
+                    communication_score,
+                    2
+                ),
+
+                "recommendation": recommendation,
+
+                "matched_skills": matched_skills,
+
+                "missing_skills": missing_skills,
+
+                "analysis": analysis,
+
+                "summary": summary,
+            })
+
+        except Exception as e:
+
+            import traceback
+
+            traceback.print_exc()
+
+            # print("ERROR:", e)
+
+    # SORT CANDIDATES
+    ranked_candidates.sort(
+
+        key=lambda x: x["final_score"],
+
+        reverse=True
     )
 
     return {
+
         "success": True,
 
-        "analysis": analysis,
+        "total_candidates": len(
+            ranked_candidates
+        ),
 
-        "match_score": f"{match_score}%",
-
-        "matched_skills": matched_skills,
-
-        "missing_skills": missing_skills,
+        "ranked_candidates": ranked_candidates
     }
 
 # OPTIONAL TEST ROUTE
