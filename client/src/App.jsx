@@ -16,134 +16,60 @@ function App() {
 
 
   // UPDATE STATUS
-  const updateCandidateStatus = (
-    index,
-    status
-  ) => {
-
-    setCandidateStatus((prev) => ({
-
-      ...prev,
-
-      [index]: status,
-
-    }));
+  const updateCandidateStatus = (index,status) => {
+    setCandidateStatus((prev) => ({...prev,[index]: status}));
   };
 
 
   // PDF REPORT DOWNLOAD
   const downloadPDFReport = () => {
-
     const doc = new jsPDF();
-
     let y = 20;
 
     doc.setFontSize(22);
-
-    doc.text(
-      "TalentLens AI - Candidate Ranking Report",
-      20,
-      y
-    );
+    doc.text("TalentLens AI - Candidate Ranking Report",20,y);
 
     y += 20;
 
     rankedCandidates.forEach((candidate, index) => {
-
       doc.setFontSize(18);
-
-      doc.text(
-        `Rank #${index + 1}`,
-        20,
-        y
-      );
+      doc.text(`Rank #${index + 1}`,20,y);
 
       y += 10;
-
       doc.setFontSize(12);
 
-      doc.text(
-        `Resume: ${candidate.resume_path}`,
-        20,
-        y
-      );
-
+      doc.text(`Resume: ${candidate.resume_path}`,20,y);
       y += 10;
 
-      doc.text(
-        `Final Weighted Score: ${candidate.final_score}/10`,
-        20,
-        y
-      );
-
+      doc.text(`Final Weighted Score: ${candidate.final_score}/10`,20,y);
       y += 10;
 
-      doc.text(
-        `Semantic Score: ${candidate.semantic_score}`,
-        20,
-        y
-      );
-
+      doc.text(`Semantic Score: ${candidate.semantic_score}`,20,y);
       y += 10;
 
-      doc.text(
-        `Skill Score: ${candidate.skill_score}/10`,
-        20,
-        y
-      );
-
+      doc.text(`Skill Score: ${candidate.skill_score}/10`,20,y);
       y += 10;
 
-      doc.text(
-        `Project Score: ${candidate.project_score}`,
-        20,
-        y
-      );
-
+      doc.text(`Project Score: ${candidate.project_score}`,20,y);
       y += 10;
 
-      doc.text(
-        `Experience Score: ${candidate.experience_score}`,
-        20,
-        y
-      );
-
+      doc.text(`Experience Score: ${candidate.experience_score}`,20,y);
       y += 10;
 
-      doc.text(
-        `Matched Skills: ${candidate.matched_skills.join(", ")}`,
-        20,
-        y
-      );
-
+      doc.text(`Matched Skills: ${candidate.matched_skills.join(", ")}`,20,y);
       y += 10;
 
-      doc.text(
-        `Missing Skills: ${candidate.missing_skills.join(", ")}`,
-        20,
-        y
-      );
-
+      doc.text(`Missing Skills: ${candidate.missing_skills.join(", ")}`,20,y);
       y += 10;
 
-      doc.text(
-        `Status: ${
-          candidateStatus[index] || "PENDING"
-        }`,
-        20,
-        y
-      );
-
+      doc.text(`Status: ${candidateStatus[index] || "PENDING"}`,20,y);
       y += 20;
 
       // NEW PAGE
       if (y > 250) {
-
         doc.addPage();
-
         y = 20;
       }
-
     });
 
     doc.save("TalentLens_Report.pdf");
@@ -152,104 +78,68 @@ function App() {
 
   // HANDLE UPLOAD
   const handleUpload = async () => {
-
     if (files.length === 0) {
-
       alert("Please select resumes");
-
       return;
     }
 
     try {
-
       setLoading(true);
 
       const token = localStorage.getItem("token");
 
       if (!token) {
-
         alert("No token found. Please login first.");
-
         setLoading(false);
-
         return;
       }
 
+      // CREATE FORM DATA
       const formData = new FormData();
-
-      files.forEach((file) => {
-
-        formData.append("resumes", file);
-
-      });
+      files.forEach((file) => formData.append("resumes", file));
 
       // UPLOAD TO EXPRESS
       const uploadRes = await API.post(
-
         "/upload/resume",
-
         formData,
-
         {
           headers: {
-
             "Content-Type": "multipart/form-data",
-
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      console.log(
-        "UPLOAD RESPONSE:",
-        uploadRes.data
-      );
+      console.log("UPLOAD RESPONSE:",uploadRes.data);
 
       // EXTRACT FILE PATHS
-      const uploadedFiles =
-        uploadRes.data.files;
+      const uploadedFiles = uploadRes.data.files;
 
-      const resumePaths =
-        uploadedFiles.map(
-          (file) => file.path
-        );
-
-      console.log(
-        "RESUME PATHS:",
-        resumePaths
+      const resumePaths = uploadedFiles.map(
+        (file) => file.path
       );
+
+      console.log("RESUME PATHS:",resumePaths);
 
       // CALL FASTAPI
       const aiRes = await fetch(
-
         "http://localhost:8001/analyze-resume",
-
         {
           method: "POST",
-
           headers: {
-
-            "Content-Type": "application/json",
-          
+            "Content-Type": "application/json",          
             "x-api-key": "talentlens_secure_api"
           },
-
           body: JSON.stringify({
-
             job_description: jobDescription,
-
             resume_paths: resumePaths,
-
           }),
         }
       );
 
       const data = await aiRes.json();
 
-      console.log(
-        "AI RESPONSE:",
-        data
-      );
+      console.log("AI RESPONSE:",data);
 
       setRankedCandidates(
         data.ranked_candidates
