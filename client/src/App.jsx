@@ -174,58 +174,40 @@ function App() {
 
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-10 py-5 border-b border-slate-800">
-
         <h1 className="text-3xl font-bold text-cyan-400">
           TalentLens AI
         </h1>
-
       </nav>
 
 
       {/* HERO */}
       <section className="px-10 py-16">
-
         <h2 className="text-5xl font-bold leading-tight">
-
           AI-Powered HR
-
           <br />
-
           Screening Platform
-
         </h2>
 
         <p className="text-slate-400 mt-6 text-lg max-w-2xl">
-
           Upload resumes, analyze candidates using AI,
           match resumes with job descriptions,
           and rank candidates intelligently.
-
         </p>
-
       </section>
 
 
       {/* JOB DESCRIPTION */}
       <section className="px-10 pb-10">
-
         <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800">
-
           <h2 className="text-2xl font-bold mb-6 text-cyan-400">
-
             Job Description
-
           </h2>
-
           <textarea
             value={jobDescription}
-
             onChange={(e) =>
               setJobDescription(e.target.value)
             }
-
             placeholder="Example: AI Engineer with NLP, RAG, Python, FastAPI and Vector Databases..."
-
             className="
               w-full
               h-40
@@ -240,29 +222,19 @@ function App() {
               resize-none
             "
           />
-
         </div>
-
       </section>
 
 
       {/* UPLOAD SECTION */}
       <section className="px-10">
-
         <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800">
-
           <h2 className="text-2xl font-bold mb-6">
-
             Upload Resumes
-
           </h2>
-
           <div className="mb-6">
-
             <label
-
               htmlFor="resumeUpload"
-
               className="
                 flex
                 items-center
@@ -280,69 +252,41 @@ function App() {
                 duration-300
               "
             >
-
               <div className="text-center">
-
                 <p className="text-cyan-400 text-lg font-semibold">
-
                   Click to Upload Resumes
-
                 </p>
-
                 <p className="text-slate-400 text-sm mt-2">
-
                   PDF or DOCX Supported
-
                 </p>
-
-                {
-                  files.length > 0 && (
-
-                    <div className="mt-4">
-
-                      {
-                        files.map((file, index) => (
-
-                          <p
-                            key={index}
-                            className="text-white font-medium"
-                          >
-                            {file.name}
-                          </p>
-
-                        ))
-                      }
-
-                    </div>
-                  )
-                }
-
+                
+                {files.length > 0 && (
+                  <div className="mt-4">
+                    {files.map((file, index) => (
+                      <p
+                        key={index}
+                        className="text-white font-medium"
+                      >
+                        {file.name}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
-
             </label>
 
             <input
               id="resumeUpload"
-
               type="file"
-
               multiple
-
               accept=".pdf,.doc,.docx"
-
-              onChange={(e) =>
-                setFiles([...e.target.files])
-              }
-
+              onChange={(e) => setFiles([...e.target.files])}
               className="hidden"
             />
-
           </div>
 
           <button
-
             onClick={handleUpload}
-
             className="
               bg-cyan-500
               hover:bg-cyan-600
@@ -352,17 +296,9 @@ function App() {
               font-semibold
             "
           >
-
-            {
-              loading
-                ? "Analyzing..."
-                : "Analyze Resumes"
-            }
-
+            {loading? "Analyzing...": "Analyze Resumes"}
           </button>
-
         </div>
-
       </section>
 
 
