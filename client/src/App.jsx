@@ -5,26 +5,22 @@ import API from "./services/api";
 function App() {
 
   const [files, setFiles] = useState([]);
-
   const [rankedCandidates, setRankedCandidates] = useState([]);
-
   const [candidateStatus, setCandidateStatus] = useState({});
-
   const [loading, setLoading] = useState(false);
-
   const [jobDescription, setJobDescription] = useState("");
 
 
   // UPDATE STATUS
-  const updateCandidateStatus = (index,status) => {
+  const updateCandidateStatus = (index,status) => {                                               // Used when HR clicks: SHORTLIST OR REJECT
     setCandidateStatus((prev) => ({...prev,[index]: status}));
   };
 
 
   // PDF REPORT DOWNLOAD
   const downloadPDFReport = () => {
-    const doc = new jsPDF();
-    let y = 20;
+    const doc = new jsPDF();                                                                      // Creates empty PDF
+    let y = 20;                                                                                   // y (third parameter) = Y coordinate → write at vertical position 20 from the top.
 
     doc.setFontSize(22);
     doc.text("TalentLens AI - Candidate Ranking Report",20,y);
@@ -67,12 +63,12 @@ function App() {
 
       // NEW PAGE
       if (y > 250) {
-        doc.addPage();
+        doc.addPage();                                                                         // Creates new page when PDF is full.
         y = 20;
       }
     });
 
-    doc.save("TalentLens_Report.pdf");
+    doc.save("TalentLens_Report.pdf");                                                         // Downloads PDF.
   };
 
 
@@ -86,7 +82,7 @@ function App() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");                                              // Get JWT Token
 
       if (!token) {
         alert("No token found. Please login first.");
@@ -95,17 +91,17 @@ function App() {
       }
 
       // CREATE FORM DATA
-      const formData = new FormData();
+      const formData = new FormData();                                                         // Used for file upload.
       files.forEach((file) => formData.append("resumes", file));
 
       // UPLOAD TO EXPRESS
       const uploadRes = await API.post(
         "/upload/resume",
-        formData,
+        formData,                                                                              // Contains uploaded resume files.
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,                                                  // This JWT Token is send to protect middleware which is used to verify the user.
           },
         }
       );
@@ -114,20 +110,19 @@ function App() {
 
       // EXTRACT FILE PATHS
       const uploadedFiles = uploadRes.data.files;
-
       const resumePaths = uploadedFiles.map(
-        (file) => file.path
+        (file) => file.path                                                                    // Only paths are kept.
       );
 
       console.log("RESUME PATHS:",resumePaths);
 
       // CALL FASTAPI
       const aiRes = await fetch(
-        "http://localhost:8001/analyze-resume",
+        "http://localhost:8001/analyze-resume",                                               // This is where AI starts.
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",          
+            "Content-Type": "application/json",
             "x-api-key": "talentlens_secure_api"
           },
           body: JSON.stringify({
@@ -137,8 +132,8 @@ function App() {
         }
       );
 
-      const data = await aiRes.json();
 
+      const data = await aiRes.json();                                                        // Receive AI Results
       console.log("AI RESPONSE:",data);
 
       setRankedCandidates(
