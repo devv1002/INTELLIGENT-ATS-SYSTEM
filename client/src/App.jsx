@@ -305,21 +305,13 @@ function App() {
       {/* RANKED CANDIDATES */}
       {
         rankedCandidates.length > 0 && (
-
           <section className="px-10 py-10">
-
             <div className="flex items-center justify-between mb-8">
-
               <h2 className="text-4xl font-bold text-cyan-400">
-
                 Ranked Candidates
-
               </h2>
-
               <button
-
                 onClick={downloadPDFReport}
-
                 className="
                   bg-cyan-500
                   hover:bg-cyan-600
@@ -329,22 +321,15 @@ function App() {
                   font-semibold
                 "
               >
-
                 Download PDF Report
-
               </button>
-
             </div>
 
             <div className="space-y-8">
-
               {
                 rankedCandidates.map((candidate, index) => (
-
                   <div
-
                     key={index}
-
                     className="
                       bg-slate-900
                       border
@@ -356,15 +341,10 @@ function App() {
 
                     {/* HEADER */}
                     <div className="flex justify-between items-center mb-8">
-
                       <div>
-
                       <div className="flex items-center gap-4">
-
                           <h2 className="text-3xl font-bold">
-
                             Rank #{index + 1}
-
                           </h2>
 
                           {/* AI RECOMMENDATION */}
@@ -375,7 +355,6 @@ function App() {
                               rounded-full
                               text-sm
                               font-bold
-
                               ${
                                 candidate.recommendation === "SHORTLIST"
 
@@ -389,9 +368,7 @@ function App() {
                               }
                             `}
                           >
-
                             {candidate.recommendation}
-
                           </span>
 
                           {/* HR OVERRIDE */}
@@ -402,123 +379,91 @@ function App() {
                               rounded-full
                               text-sm
                               font-semibold
-
                               ${
                                 candidateStatus[index] === "SHORTLISTED"
-
                                   ? "bg-green-500/20 text-green-400"
-
                                   : candidateStatus[index] === "REJECTED"
-
                                   ? "bg-red-500/20 text-red-400"
-
                                   : "bg-slate-700 text-slate-300"
                               }
                             `}
                           >
-
                             {
                               candidateStatus[index] || "HR PENDING"
                             }
-
                           </span>
-
-                          </div>
+                      </div>
 
                         <p className="text-slate-400 mt-2">
-
                           {candidate.resume_path}
-
                         </p>
 
                       </div>
 
                       <div className="text-right">
-
                         <h1 className="text-6xl font-bold text-cyan-400">
-
                           {candidate.final_score}
-
                         </h1>
 
                         <p className="text-slate-400">
-
                           Final Score
-
                         </p>
-
                       </div>
 
                     </div>
 
 
                     {/* SCORE CARDS */}
-                    {/* SCORE CARDS */}
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
 
                       {/* SKILLS */}
                       <div className="bg-slate-800 p-5 rounded-xl">
-
                         <p className="text-slate-400">
                           Skills
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2">
                           {candidate.skills_score}
                         </h3>
-
                       </div>
 
                       {/* EXPERIENCE */}
                       <div className="bg-slate-800 p-5 rounded-xl">
-
                         <p className="text-slate-400">
                           Experience
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2">
                           {candidate.experience_score}
                         </h3>
-
                       </div>
 
                       {/* EDUCATION */}
                       <div className="bg-slate-800 p-5 rounded-xl">
-
                         <p className="text-slate-400">
                           Education
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2">
                           {candidate.education_score}
                         </h3>
-
                       </div>
 
                       {/* PROJECTS */}
                       <div className="bg-slate-800 p-5 rounded-xl">
-
                         <p className="text-slate-400">
                           Projects
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2">
                           {candidate.project_score}
                         </h3>
-
                       </div>
 
                       {/* COMMUNICATION */}
                       <div className="bg-slate-800 p-5 rounded-xl">
-
                         <p className="text-slate-400">
                           Communication
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2">
                           {candidate.communication_score}
                         </h3>
-
                       </div>
 
                       </div>
@@ -529,22 +474,16 @@ function App() {
 
                       {/* MATCHED */}
                       <div className="bg-slate-800 p-6 rounded-2xl">
-
                         <h3 className="text-2xl font-bold text-green-400 mb-4">
-
                           Matched Skills
-
                         </h3>
 
                         <div className="flex flex-wrap gap-3">
-
                           {
                             candidate.matched_skills.map(
                               (skill, idx) => (
-
                                 <span
                                   key={idx}
-
                                   className="
                                     bg-green-500/20
                                     text-green-400
@@ -559,7 +498,6 @@ function App() {
                               )
                             )
                           }
-
                         </div>
 
                       </div>
@@ -567,22 +505,15 @@ function App() {
 
                       {/* MISSING */}
                       <div className="bg-slate-800 p-6 rounded-2xl">
-
                         <h3 className="text-2xl font-bold text-red-400 mb-4">
-
                           Missing Skills
-
                         </h3>
-
                         <div className="flex flex-wrap gap-3">
-
                           {
                             candidate.missing_skills.map(
                               (skill, idx) => (
-
                                 <span
                                   key={idx}
-
                                   className="
                                     bg-red-500/20
                                     text-red-400
@@ -593,13 +524,10 @@ function App() {
                                 >
                                   {skill}
                                 </span>
-
                               )
                             )
                           }
-
                         </div>
-
                       </div>
 
                     </div>
