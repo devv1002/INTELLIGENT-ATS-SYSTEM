@@ -13,6 +13,9 @@ const protect = async (req, res, next) => {
       });
     }
 
+    console.log("AUTH HEADER:", token);
+    console.log("JWT SECRET:", process.env.JWT_SECRET);
+
     const decoded = jwt.verify(
       token.split(" ")[1],
       process.env.JWT_SECRET
@@ -24,6 +27,8 @@ const protect = async (req, res, next) => {
 
   } catch (error) {
 
+    console.log("JWT ERROR:", error);
+  
     return res.status(401).json({
       success: false,
       message: "Invalid token",
